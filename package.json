@@ -6,15 +6,6 @@
     "scripts": {
         "start": "node index.js"
     },
-    "repository": {
-        "type": "git",
-        "url": ""
-    },
-    "license": "MIT",
-    "bugs": {
-        "url": ""
-    },
-    "homepage": "",
     "keywords": [
         "facebook",
         "chat",
