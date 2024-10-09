@@ -20,12 +20,8 @@ jobs:
       - name: ✨ Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: ".nvmrc"
-          cache: pnpm
+          node-version: 20
           registry-url: https://registry.npmjs.org
-
-      - name: ✨ Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: 🦖 PUBLISH
         shell: bash
