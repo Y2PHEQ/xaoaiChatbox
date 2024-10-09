@@ -1,0 +1,43 @@
+{
+    "name": "xaoai/chatbox",
+    "version": "2.0.8",
+    "description": "A Facebook chat API that doesn't rely on XMPP. Will NOT be deprecated after April 30th 2015.",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "license": "MIT",
+    "bugs": {
+        "url": ""
+    },
+    "homepage": "",
+    "keywords": [
+        "facebook",
+        "chat",
+        "api",
+        "fca",
+        "xaoaiChatbox"
+    ],
+    "dependencies": {
+        "bluebird": "^x.x.x",
+        "axios": "^x.x.x",
+        "cheerio": "^x.x.x",
+        "https-proxy-agent": "^x.x.x",
+        "mqtt": "^x.x.x",
+        "npmlog": "^x.x.x",
+        "request": "^x.x.x",
+        "websocket-stream": "^x.x.x"
+    },
+    "devDependencies": {
+        "eslint": "^x.x.x",
+        "mocha": "^x.x.x",
+        "prettier": "^x.x.x"
+    },
+    "engines": {
+        "node": ">=18.x"
+    }
+}
