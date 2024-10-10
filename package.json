@@ -1,10 +1,6 @@
 {
     "name": "xaoai-chatbox",
-<<<<<<< HEAD
     "version": "0.0.4",
-=======
-    "version": "0.0.3",
->>>>>>> refs/remotes/origin/main
     "description": "A Facebook chat API that doesn't rely on XMPP. Will NOT be deprecated after April 30th 2015.",
     "main": "index.js",
     "scripts": {
