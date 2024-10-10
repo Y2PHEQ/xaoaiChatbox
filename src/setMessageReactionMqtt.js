@@ -1,7 +1,6 @@
-
 'use strict';
 
-const { generateOfflineThreadingID } = require('../utils');
+const { generateOfflineThreadingID, getCurrentTimestamp } = require('../utils');
 
 function isCallable(func) {
   try {
@@ -17,15 +16,13 @@ module.exports = function (defaultFuncs, api, ctx) {
     if (!ctx.mqttClient) {
       throw new Error('Not connected to MQTT');
     }
-    
-        // modified and fix by kenneth panio the edit now works on secondary profile accounts
 
     ctx.wsReqNumber += 1;
     ctx.wsTaskNumber += 1;
 
     const taskPayload = {
       thread_key: threadID,
-      timestamp_ms: Date.now(),
+      timestamp_ms: getCurrentTimestamp(),
       message_id: messageID,
       reaction: reaction,
       actor_id: ctx.userID,

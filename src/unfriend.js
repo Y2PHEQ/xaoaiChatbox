@@ -4,7 +4,7 @@ var utils = require("../utils");
 var log = require("npmlog");
 
 module.exports = function(defaultFuncs, api, ctx) {
-  return function unFriend(userID, callback) {
+  return function unsendMessage(userID, callback) {
     var resolveFunc = function(){};
     var rejectFunc = function(){};
     var returnPromise = new Promise(function (resolve, reject) {

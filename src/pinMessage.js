@@ -1,4 +1,3 @@
-
 'use strict';
 
 const { generateOfflineThreadingID, getCurrentTimestamp } = require('../utils');

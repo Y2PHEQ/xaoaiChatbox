@@ -1,20 +1,7 @@
 "use strict";
 
-const utils = require("../utils");
-const log = require("npmlog");
-
-function getExtension(original_extension, filename = "") {
-  if (original_extension) {
-    return original_extension;
-  } else {
-    const extension = filename.split(".").pop();
-    if (extension === filename) {
-      return "";
-    } else {
-      return extension;
-    }
-  }
-}
+var utils = require("../utils");
+var log = require("npmlog");
 
 function formatAttachmentsGraphQLResponse(attachment) {
   switch (attachment.__typename) {
@@ -23,10 +10,6 @@ function formatAttachmentsGraphQLResponse(attachment) {
         type: "photo",
         ID: attachment.legacy_attachment_id,
         filename: attachment.filename,
-        original_extension: getExtension(
-          attachment.original_extension,
-          attachment.filename,
-        ),
         thumbnailUrl: attachment.thumbnail.uri,
 
         previewUrl: attachment.preview.uri,
@@ -48,9 +31,9 @@ function formatAttachmentsGraphQLResponse(attachment) {
           ? {
               attributionAppID: attachment.attribution_app.id,
               name: attachment.attribution_app.name,
-              logo: attachment.attribution_app.square_logo,
+              logo: attachment.attribution_app.square_logo
             }
-          : null,
+          : null
 
         // @TODO No idea what this is, should we expose it?
         //      Ben - July 15th 2017
@@ -74,10 +57,6 @@ function formatAttachmentsGraphQLResponse(attachment) {
         type: "animated_image",
         ID: attachment.legacy_attachment_id,
         filename: attachment.filename,
-        original_extension: getExtension(
-          attachment.original_extension,
-          attachment.filename,
-        ),
 
         previewUrl: attachment.preview_image.uri,
         previewWidth: attachment.preview_image.width,
@@ -101,20 +80,15 @@ function formatAttachmentsGraphQLResponse(attachment) {
           ? {
               attributionAppID: attachment.attribution_app.id,
               name: attachment.attribution_app.name,
-              logo: attachment.attribution_app.square_logo,
+              logo: attachment.attribution_app.square_logo
             }
-          : null,
+          : null
       };
     case "MessageVideo":
       return {
         type: "video",
-        ID: attachment.legacy_attachment_id,
         filename: attachment.filename,
-        original_extension: getExtension(
-          attachment.original_extension,
-          attachment.filename,
-        ),
-        duration: attachment.playable_duration_in_ms,
+        ID: attachment.legacy_attachment_id,
 
         thumbnailUrl: attachment.large_image.uri, // @Legacy
 
@@ -126,17 +100,14 @@ function formatAttachmentsGraphQLResponse(attachment) {
         width: attachment.original_dimensions.x,
         height: attachment.original_dimensions.y,
 
-        videoType: attachment.video_type.toLowerCase(),
+        duration: attachment.playable_duration_in_ms,
+        videoType: attachment.video_type.toLowerCase()
       };
     case "MessageFile":
       return {
         type: "file",
-        ID: attachment.message_file_fbid,
         filename: attachment.filename,
-        original_extension: getExtension(
-          attachment.original_extension,
-          attachment.filename,
-        ),
+        ID: attachment.message_file_fbid,
 
         url: attachment.url,
         isMalicious: attachment.is_malicious,
@@ -144,27 +115,23 @@ function formatAttachmentsGraphQLResponse(attachment) {
 
         name: attachment.filename, // @Legacy
         mimeType: "", // @Legacy
-        fileSize: -1, // @Legacy
+        fileSize: -1 // @Legacy
       };
     case "MessageAudio":
       return {
         type: "audio",
-        ID: attachment.url_shimhash, // Not fowardable
         filename: attachment.filename,
-        original_extension: getExtension(
-          attachment.original_extension,
-          attachment.filename,
-        ),
+        ID: attachment.url_shimhash, // Not fowardable
 
-        duration: attachment.playable_duration_in_ms,
         audioType: attachment.audio_type,
+        duration: attachment.playable_duration_in_ms,
         url: attachment.playable_url,
 
-        isVoiceMail: attachment.is_voicemail,
+        isVoiceMail: attachment.is_voicemail
       };
     default:
       return {
-        error: "Don't know about attachment type " + attachment.__typename,
+        error: "Don't know about attachment type " + attachment.__typename
       };
   }
 }
@@ -189,7 +156,7 @@ function formatExtensibleAttachment(attachment) {
         attachment.story_attachment.media == null
           ? null
           : attachment.story_attachment.media.animated_image == null &&
-              attachment.story_attachment.media.image == null
+            attachment.story_attachment.media.image == null
             ? null
             : (
                 attachment.story_attachment.media.animated_image ||
@@ -199,7 +166,7 @@ function formatExtensibleAttachment(attachment) {
         attachment.story_attachment.media == null
           ? null
           : attachment.story_attachment.media.animated_image == null &&
-              attachment.story_attachment.media.image == null
+            attachment.story_attachment.media.image == null
             ? null
             : (
                 attachment.story_attachment.media.animated_image ||
@@ -209,7 +176,7 @@ function formatExtensibleAttachment(attachment) {
         attachment.story_attachment.media == null
           ? null
           : attachment.story_attachment.media.animated_image == null &&
-              attachment.story_attachment.media.image == null
+            attachment.story_attachment.media.image == null
             ? null
             : (
                 attachment.story_attachment.media.animated_image ||
@@ -243,13 +210,14 @@ function formatExtensibleAttachment(attachment) {
       //     width: "1280"
       //   }
       //
-      properties: attachment.story_attachment.properties.reduce(function (
+      properties: attachment.story_attachment.properties.reduce(function(
         obj,
-        cur,
+        cur
       ) {
         obj[cur.key] = cur.value.text;
         return obj;
-      }, {}),
+      },
+      {}),
 
       // Deprecated fields
       animatedImageSize: "", // @Legacy
@@ -260,7 +228,7 @@ function formatExtensibleAttachment(attachment) {
         attachment.story_attachment.media == null
           ? null
           : attachment.story_attachment.media.animated_image == null &&
-              attachment.story_attachment.media.image == null
+            attachment.story_attachment.media.image == null
             ? null
             : (
                 attachment.story_attachment.media.animated_image ||
@@ -270,7 +238,7 @@ function formatExtensibleAttachment(attachment) {
         attachment.story_attachment.media == null
           ? null
           : attachment.story_attachment.media.animated_image == null &&
-              attachment.story_attachment.media.image == null
+            attachment.story_attachment.media.image == null
             ? null
             : (
                 attachment.story_attachment.media.animated_image ||
@@ -280,12 +248,12 @@ function formatExtensibleAttachment(attachment) {
         attachment.story_attachment.media == null
           ? null
           : attachment.story_attachment.media.animated_image == null &&
-              attachment.story_attachment.media.image == null
+            attachment.story_attachment.media.image == null
             ? null
             : (
                 attachment.story_attachment.media.animated_image ||
                 attachment.story_attachment.media.image
-              ).height, // @Legacy
+              ).height // @Legacy
     };
   } else {
     return { error: "Don't know what to do with extensible_attachment." };
@@ -295,7 +263,7 @@ function formatExtensibleAttachment(attachment) {
 function formatReactionsGraphQL(reaction) {
   return {
     reaction: reaction.reaction,
-    userID: reaction.user.id,
+    userID: reaction.user.id
   };
 }
 
@@ -307,62 +275,62 @@ function formatEventData(event) {
   switch (event.__typename) {
     case "ThemeColorExtensibleMessageAdminText":
       return {
-        color: event.theme_color,
+        color: event.theme_color
       };
     case "ThreadNicknameExtensibleMessageAdminText":
       return {
         nickname: event.nickname,
-        participantID: event.participant_id,
+        participantID: event.participant_id
       };
     case "ThreadIconExtensibleMessageAdminText":
       return {
-        threadIcon: event.thread_icon,
+        threadIcon: event.thread_icon
       };
     case "InstantGameUpdateExtensibleMessageAdminText":
       return {
-        gameID: event.game == null ? null : event.game.id,
+        gameID: (event.game == null ? null : event.game.id),
         update_type: event.update_type,
         collapsed_text: event.collapsed_text,
         expanded_text: event.expanded_text,
-        instant_game_update_data: event.instant_game_update_data,
+        instant_game_update_data: event.instant_game_update_data
       };
     case "GameScoreExtensibleMessageAdminText":
       return {
-        game_type: event.game_type,
+        game_type: event.game_type
       };
     case "RtcCallLogExtensibleMessageAdminText":
       return {
         event: event.event,
         is_video_call: event.is_video_call,
-        server_info_data: event.server_info_data,
+        server_info_data: event.server_info_data
       };
     case "GroupPollExtensibleMessageAdminText":
       return {
         event_type: event.event_type,
         total_count: event.total_count,
-        question: event.question,
+        question: event.question
       };
     case "AcceptPendingThreadExtensibleMessageAdminText":
       return {
         accepter_id: event.accepter_id,
-        requester_id: event.requester_id,
+        requester_id: event.requester_id
       };
     case "ConfirmFriendRequestExtensibleMessageAdminText":
       return {
         friend_request_recipient: event.friend_request_recipient,
-        friend_request_sender: event.friend_request_sender,
+        friend_request_sender: event.friend_request_sender
       };
     case "AddContactExtensibleMessageAdminText":
       return {
         contact_added_id: event.contact_added_id,
-        contact_adder_id: event.contact_adder_id,
+        contact_adder_id: event.contact_adder_id
       };
     case "AdExtensibleMessageAdminText":
       return {
         ad_client_token: event.ad_client_token,
         ad_id: event.ad_id,
         ad_preferences_link: event.ad_preferences_link,
-        ad_properties: event.ad_properties,
+        ad_properties: event.ad_properties
       };
     // never data
     case "ParticipantJoinedGroupCallExtensibleMessageAdminText":
@@ -378,18 +346,18 @@ function formatEventData(event) {
       return {};
     default:
       return {
-        error: "Don't know what to with event data type " + event.__typename,
+        error: "Don't know what to with event data type " + event.__typename
       };
   }
 }
 
 function formatMessagesGraphQLResponse(data) {
-  const messageThread = data.o0.data.message_thread;
-  const threadID = messageThread.thread_key.thread_fbid
+  var messageThread = data.o0.data.message_thread;
+  var threadID = messageThread.thread_key.thread_fbid
     ? messageThread.thread_key.thread_fbid
     : messageThread.thread_key.other_user_id;
 
-  const messages = messageThread.messages.nodes.map(function (d) {
+  var messages = messageThread.messages.nodes.map(function(d) {
     switch (d.__typename) {
       case "UserMessage":
         // Give priority to stickers. They're seen as normal messages but we've
@@ -402,7 +370,7 @@ function formatMessagesGraphQLResponse(data) {
               ID: d.sticker.id,
               url: d.sticker.url,
 
-              packID: d.sticker.pack ? d.sticker.pack.id : null,
+              packID: d.sticker.pack.id,
               spriteUrl: d.sticker.sprite_image,
               spriteUrl2x: d.sticker.sprite_image_2x,
               width: d.sticker.width,
@@ -418,18 +386,15 @@ function formatMessagesGraphQLResponse(data) {
 
               stickerID: d.sticker.id, // @Legacy
               spriteURI: d.sticker.sprite_image, // @Legacy
-              spriteURI2x: d.sticker.sprite_image_2x, // @Legacy
-            },
+              spriteURI2x: d.sticker.sprite_image_2x // @Legacy
+            }
           ];
         }
 
         var mentionsObj = {};
         if (d.message !== null) {
-          d.message.ranges.forEach((e) => {
-            mentionsObj[e.entity.id] = d.message.text.substr(
-              e.offset,
-              e.length,
-            );
+          d.message.ranges.forEach(e => {
+            mentionsObj[e.entity.id] = d.message.text.substr(e.offset, e.length);
           });
         }
 
@@ -442,7 +407,7 @@ function formatMessagesGraphQLResponse(data) {
               : d.extensible_attachment
                 ? [formatExtensibleAttachment(d.extensible_attachment)]
                 : [],
-          body: d.message !== null ? d.message.text : "",
+          body: d.message !== null ? d.message.text : '',
           isGroup: messageThread.thread_type === "GROUP",
           messageID: d.message_id,
           senderID: d.message_sender.id,
@@ -457,7 +422,7 @@ function formatMessagesGraphQLResponse(data) {
             ? d.message_reactions.map(formatReactionsGraphQL)
             : null,
           isSponsored: d.is_sponsored,
-          snippet: d.snippet,
+          snippet: d.snippet
         };
       case "ThreadNameMessage":
         return {
@@ -470,13 +435,13 @@ function formatMessagesGraphQLResponse(data) {
           eventType: "change_thread_name",
           snippet: d.snippet,
           eventData: {
-            threadName: d.thread_name,
+            threadName: d.thread_name
           },
 
           // @Legacy
           author: d.message_sender.id,
           logMessageType: "log:thread-name",
-          logMessageData: { name: d.thread_name },
+          logMessageData: { name: d.thread_name }
         };
       case "ThreadImageMessage":
         return {
@@ -497,8 +462,8 @@ function formatMessagesGraphQLResponse(data) {
                     attachmentID: d.image_with_metadata.legacy_attachment_id,
                     width: d.image_with_metadata.original_dimensions.x,
                     height: d.image_with_metadata.original_dimensions.y,
-                    url: d.image_with_metadata.preview.uri,
-                  },
+                    url: d.image_with_metadata.preview.uri
+                  }
                 },
 
           // @Legacy
@@ -506,8 +471,8 @@ function formatMessagesGraphQLResponse(data) {
           logMessageData: {
             thread_icon: d.image_with_metadata
               ? d.image_with_metadata.preview.uri
-              : null,
-          },
+              : null
+          }
         };
       case "ParticipantLeftMessage":
         return {
@@ -521,18 +486,18 @@ function formatMessagesGraphQLResponse(data) {
           snippet: d.snippet,
           eventData: {
             // Array of IDs.
-            participantsRemoved: d.participants_removed.map(function (p) {
+            participantsRemoved: d.participants_removed.map(function(p) {
               return p.id;
-            }),
+            })
           },
 
           // @Legacy
           logMessageType: "log:unsubscribe",
           logMessageData: {
-            leftParticipantFbId: d.participants_removed.map(function (p) {
+            leftParticipantFbId: d.participants_removed.map(function(p) {
               return p.id;
-            }),
-          },
+            })
+          }
         };
       case "ParticipantsAddedMessage":
         return {
@@ -546,18 +511,18 @@ function formatMessagesGraphQLResponse(data) {
           snippet: d.snippet,
           eventData: {
             // Array of IDs.
-            participantsAdded: d.participants_added.map(function (p) {
+            participantsAdded: d.participants_added.map(function(p) {
               return p.id;
-            }),
+            })
           },
 
           // @Legacy
           logMessageType: "log:subscribe",
           logMessageData: {
-            addedParticipants: d.participants_added.map(function (p) {
+            addedParticipants: d.participants_added.map(function(p) {
               return p.id;
-            }),
-          },
+            })
+          }
         };
       case "VideoCallMessage":
         return {
@@ -571,7 +536,7 @@ function formatMessagesGraphQLResponse(data) {
           snippet: d.snippet,
 
           // @Legacy
-          logMessageType: "other",
+          logMessageType: "other"
         };
       case "VoiceCallMessage":
         return {
@@ -585,7 +550,7 @@ function formatMessagesGraphQLResponse(data) {
           snippet: d.snippet,
 
           // @Legacy
-          logMessageType: "other",
+          logMessageType: "other"
         };
       case "GenericAdminTextMessage":
         return {
@@ -601,9 +566,9 @@ function formatMessagesGraphQLResponse(data) {
 
           // @Legacy
           logMessageType: utils.getAdminTextMessageType(
-            d.extensible_message_admin_text_type,
+            d.extensible_message_admin_text_type
           ),
-          logMessageData: d.extensible_message_admin_text, // Maybe different?
+          logMessageData: d.extensible_message_admin_text // Maybe different?
         };
       default:
         return { error: "Don't know about message type " + d.__typename };
@@ -612,16 +577,16 @@ function formatMessagesGraphQLResponse(data) {
   return messages;
 }
 
-module.exports = function (defaultFuncs, api, ctx) {
+module.exports = function(defaultFuncs, api, ctx) {
   return function getThreadHistoryGraphQL(
     threadID,
     amount,
     timestamp,
-    callback,
+    callback
   ) {
-    let resolveFunc = function () {};
-    let rejectFunc = function () {};
-    const returnPromise = new Promise(function (resolve, reject) {
+    var resolveFunc = function(){};
+    var rejectFunc = function(){};
+    var returnPromise = new Promise(function (resolve, reject) {
       resolveFunc = resolve;
       rejectFunc = reject;
     });
@@ -637,8 +602,8 @@ module.exports = function (defaultFuncs, api, ctx) {
 
     // `queries` has to be a string. I couldn't tell from the dev console. This
     // took me a really long time to figure out. I deserve a cookie for this.
-    const form = {
-      av: ctx.globalOptions.pageID,
+    var form = {
+      "av": ctx.globalOptions.pageID,
       queries: JSON.stringify({
         o0: {
           // This doc_id was valid on February 2nd 2017.
@@ -648,16 +613,16 @@ module.exports = function (defaultFuncs, api, ctx) {
             message_limit: amount,
             load_messages: 1,
             load_read_receipts: false,
-            before: timestamp,
-          },
-        },
-      }),
+            before: timestamp
+          }
+        }
+      })
     };
 
     defaultFuncs
       .post("https://www.facebook.com/api/graphqlbatch/", ctx.jar, form)
       .then(utils.parseAndCheckLogin(ctx, defaultFuncs))
-      .then(function (resData) {
+      .then(function(resData) {
         if (resData.error) {
           throw resData;
         }
@@ -670,7 +635,7 @@ module.exports = function (defaultFuncs, api, ctx) {
 
         callback(null, formatMessagesGraphQLResponse(resData[0]));
       })
-      .catch(function (err) {
+      .catch(function(err) {
         log.error("getThreadHistoryGraphQL", err);
         return callback(err);
       });

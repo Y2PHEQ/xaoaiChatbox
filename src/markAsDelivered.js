@@ -1,13 +1,13 @@
 "use strict";
 
-const utils = require("../utils");
-const log = require("npmlog");
+var utils = require("../utils");
+var log = require("npmlog");
 
 module.exports = function (defaultFuncs, api, ctx) {
   return function markAsDelivered(threadID, messageID, callback) {
-    let resolveFunc = function () {};
-    let rejectFunc = function () {};
-    const returnPromise = new Promise(function (resolve, reject) {
+    var resolveFunc = function(){};
+    var rejectFunc = function(){};
+    var returnPromise = new Promise(function (resolve, reject) {
       resolveFunc = resolve;
       rejectFunc = reject;
     });
@@ -25,7 +25,7 @@ module.exports = function (defaultFuncs, api, ctx) {
       return callback("Error: messageID or threadID is not defined");
     }
 
-    const form = {};
+    var form = {};
 
     form["message_ids[0]"] = messageID;
     form["thread_ids[" + threadID + "][0]"] = messageID;
@@ -34,7 +34,7 @@ module.exports = function (defaultFuncs, api, ctx) {
       .post(
         "https://www.facebook.com/ajax/mercury/delivery_receipts.php",
         ctx.jar,
-        form,
+        form
       )
       .then(utils.saveCookies(ctx.jar))
       .then(utils.parseAndCheckLogin(ctx, defaultFuncs))

@@ -1,18 +1,18 @@
 "use strict";
 
-const utils = require("../utils");
-const log = require("npmlog");
+var utils = require("../utils");
+var log = require("npmlog");
 
-module.exports = function (defaultFuncs, api, ctx) {
+module.exports = function(defaultFuncs, api, ctx) {
   return function deleteThread(threadOrThreads, callback) {
-    let resolveFunc = function () {};
-    let rejectFunc = function () {};
-    const returnPromise = new Promise(function (resolve, reject) {
+    var resolveFunc = function(){};
+    var rejectFunc = function(){};
+    var returnPromise = new Promise(function (resolve, reject) {
       resolveFunc = resolve;
       rejectFunc = reject;
     });
     if (!callback) {
-      callback = function (err) {
+      callback = function(err) {
         if (err) {
           return rejectFunc(err);
         }
@@ -20,15 +20,15 @@ module.exports = function (defaultFuncs, api, ctx) {
       };
     }
 
-    const form = {
-      client: "mercury",
+    var form = {
+      client: "mercury"
     };
 
     if (utils.getType(threadOrThreads) !== "Array") {
       threadOrThreads = [threadOrThreads];
     }
 
-    for (let i = 0; i < threadOrThreads.length; i++) {
+    for (var i = 0; i < threadOrThreads.length; i++) {
       form["ids[" + i + "]"] = threadOrThreads[i];
     }
 
@@ -36,17 +36,17 @@ module.exports = function (defaultFuncs, api, ctx) {
       .post(
         "https://www.facebook.com/ajax/mercury/delete_thread.php",
         ctx.jar,
-        form,
+        form
       )
       .then(utils.parseAndCheckLogin(ctx, defaultFuncs))
-      .then(function (resData) {
+      .then(function(resData) {
         if (resData.error) {
           throw resData;
         }
 
         return callback();
       })
-      .catch(function (err) {
+      .catch(function(err) {
         log.error("deleteThread", err);
         return callback(err);
       });

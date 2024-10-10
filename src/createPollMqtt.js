@@ -1,6 +1,6 @@
-"use_strict";
+'use strict';
 
-const { generateOfflineThreadingID } = require('../utils');
+const { generateOfflineThreadingID, getCurrentTimestamp } = require('@xaviabot/fca-unofficial/utils');
 
 function isCallable(func) {
   try {
@@ -12,43 +12,40 @@ function isCallable(func) {
 }
 
 module.exports = function (defaultFuncs, api, ctx) {
-
-  return function editMessage(text, messageID, callback) {
+  return function createPollMqtt(title, options, threadID, callback) {
     if (!ctx.mqttClient) {
       throw new Error('Not connected to MQTT');
     }
-
 
     ctx.wsReqNumber += 1;
     ctx.wsTaskNumber += 1;
 
     const taskPayload = {
-      message_id: messageID,
-      text: text,
+      question_text: title,
+      thread_key: threadID,
+      options: options,
+      sync_group: 1,
     };
 
     const task = {
       failure_count: null,
-      label: '742',
+      label: '163',
       payload: JSON.stringify(taskPayload),
-      queue_name: 'edit_message',
+      queue_name: 'poll_creation',
       task_id: ctx.wsTaskNumber,
     };
 
     const content = {
       app_id: '2220391788200892',
-      payload: {
+      payload: JSON.stringify({
         data_trace_id: null,
         epoch_id: parseInt(generateOfflineThreadingID()),
-        tasks: [],
-        version_id: '6903494529735864',
-      },
+        tasks: [task],
+        version_id: '7158486590867448',
+      }),
       request_id: ctx.wsReqNumber,
       type: 3,
     };
-
-    content.payload.tasks.push(task);
-    content.payload = JSON.stringify(content.payload);
 
     if (isCallable(callback)) {
       ctx.reqCallbacks[ctx.wsReqNumber] = callback;
@@ -56,4 +53,4 @@ module.exports = function (defaultFuncs, api, ctx) {
 
     ctx.mqttClient.publish('/ls_req', JSON.stringify(content), { qos: 1, retain: false });
   };
-}
+};

@@ -1,13 +1,13 @@
 "use strict";
 
-const utils = require("../utils");
-const log = require("npmlog");
+var utils = require("../utils");
+var log = require("npmlog");
 
-module.exports = function (defaultFuncs, api, ctx) {
+module.exports = function(defaultFuncs, api, ctx) {
   return function createPoll(title, threadID, options, callback) {
-    let resolveFunc = function () {};
-    let rejectFunc = function () {};
-    const returnPromise = new Promise(function (resolve, reject) {
+    var resolveFunc = function(){};
+    var rejectFunc = function(){};
+    var returnPromise = new Promise(function (resolve, reject) {
       resolveFunc = resolve;
       rejectFunc = reject;
     });
@@ -17,7 +17,7 @@ module.exports = function (defaultFuncs, api, ctx) {
         callback = options;
         options = null;
       } else {
-        callback = function (err) {
+        callback = function(err) {
           if (err) {
             return rejectFunc(err);
           }
@@ -29,14 +29,14 @@ module.exports = function (defaultFuncs, api, ctx) {
       options = {}; // Initial poll options are optional
     }
 
-    const form = {
+    var form = {
       target_id: threadID,
-      question_text: title,
+      question_text: title
     };
 
     // Set fields for options (and whether they are selected initially by the posting user)
-    let ind = 0;
-    for (const opt in options) {
+    var ind = 0;
+    for (var opt in options) {
       // eslint-disable-next-line no-prototype-builtins
       if (options.hasOwnProperty(opt)) {
         form["option_text_array[" + ind + "]"] = opt;
@@ -51,17 +51,17 @@ module.exports = function (defaultFuncs, api, ctx) {
       .post(
         "https://www.facebook.com/messaging/group_polling/create_poll/?dpr=1",
         ctx.jar,
-        form,
+        form
       )
       .then(utils.parseAndCheckLogin(ctx, defaultFuncs))
-      .then(function (resData) {
+      .then(function(resData) {
         if (resData.payload.status != "success") {
           throw resData;
         }
 
         return callback();
       })
-      .catch(function (err) {
+      .catch(function(err) {
         log.error("createPoll", err);
         return callback(err);
       });

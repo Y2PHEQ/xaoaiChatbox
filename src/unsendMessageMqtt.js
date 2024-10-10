@@ -1,6 +1,6 @@
-"use_strict";
+'use strict';
 
-const { generateOfflineThreadingID } = require('../utils');
+const { generateOfflineThreadingID, getCurrentTimestamp } = require('../utils');
 
 function isCallable(func) {
   try {
@@ -12,43 +12,43 @@ function isCallable(func) {
 }
 
 module.exports = function (defaultFuncs, api, ctx) {
-
-  return function editMessage(text, messageID, callback) {
+  return function unsendMessageMqtt(messageID, threadID, callback) {
     if (!ctx.mqttClient) {
       throw new Error('Not connected to MQTT');
     }
 
-
     ctx.wsReqNumber += 1;
     ctx.wsTaskNumber += 1;
 
+    const label = '33';
+
     const taskPayload = {
       message_id: messageID,
-      text: text,
+      thread_key: threadID,
+      sync_group: 1,
     };
+
+    const payload = JSON.stringify(taskPayload);
+    const version = '25393437286970779';
 
     const task = {
       failure_count: null,
-      label: '742',
-      payload: JSON.stringify(taskPayload),
-      queue_name: 'edit_message',
+      label: label,
+      payload: payload,
+      queue_name: 'unsend_message',
       task_id: ctx.wsTaskNumber,
     };
 
     const content = {
       app_id: '2220391788200892',
-      payload: {
-        data_trace_id: null,
+      payload: JSON.stringify({
+        tasks: [task],
         epoch_id: parseInt(generateOfflineThreadingID()),
-        tasks: [],
-        version_id: '6903494529735864',
-      },
+        version_id: version,
+      }),
       request_id: ctx.wsReqNumber,
       type: 3,
     };
-
-    content.payload.tasks.push(task);
-    content.payload = JSON.stringify(content.payload);
 
     if (isCallable(callback)) {
       ctx.reqCallbacks[ctx.wsReqNumber] = callback;
@@ -56,4 +56,4 @@ module.exports = function (defaultFuncs, api, ctx) {
 
     ctx.mqttClient.publish('/ls_req', JSON.stringify(content), { qos: 1, retain: false });
   };
-}
+};
